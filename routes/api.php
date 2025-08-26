@@ -60,12 +60,29 @@ Route::prefix('v1')->group(function(){
             Route::put('adeudos/{adeudo}', [AdeudoController::class, 'update']);
         });
 
-        // Pago CRUD routes
-        Route::get('pagos/search/{q?}', [PagoController::class, 'search']);
-        Route::get('pagos', [PagoController::class, 'index']);
-        Route::post('pagos', [PagoController::class, 'store']);
-        Route::where(['pago' => '[0-9]+'])->group(function(){
-            Route::get('pagos/{pago}', [PagoController::class, 'show']);
-        });
+        // Pagos CRUD(NO DELETE) routes
+        Route::get('search/{q?}', [PagoController::class, 'search']);
+            Route::get('pagos', [PagoController::class, 'index']);
+            Route::post('pagos', [PagoController::class, 'store']);
+            Route::where(['pagos' => '[0-9]+'])->group(function(){
+                Route::get('pagos/{pago}', [PagoController::class, 'show']);
+            });
+
+        Route::prefix('pagos')->group(function(){
+
+            Route::get('adeudos/search/{q?}', [PagoController::class, 'search']);
+            Route::get('adeudos', [PagoController::class, 'index']);
+            Route::post('adeudos', [PagoController::class, 'store']);
+            Route::where(['pago' => '[0-9]+'])->group(function(){
+                Route::get('adeudos/{pago}', [PagoController::class, 'show']);
+            });
+
+            Route::get('requeridos/search/{q?}', [PagoController::class, 'search']);
+            Route::get('requeridos', [PagoController::class, 'index']);
+            Route::post('requeridos', [PagoController::class, 'store']);
+            Route::where(['pago' => '[0-9]+'])->group(function(){
+                Route::get('requeridos/{pago}', [PagoController::class, 'show']);
+            });
+        }); 
     });
 });
