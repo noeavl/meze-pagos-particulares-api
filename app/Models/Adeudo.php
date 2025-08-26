@@ -41,6 +41,7 @@ class Adeudo extends Model
 
     public function pagos(): BelongsToMany
     {
-        return $this->belongsToMany(Pago::class, 'pagos_adeudos', 'adeudo_id', 'pago_id');
+        return $this->belongsToMany(Pago::class, 'pagos_adeudos', 'adeudo_id', 'pago_id')
+                    ->withTimestamps();
     }
 }

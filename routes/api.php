@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\EstudianteController;
 use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\AdeudoController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PagoController;
 
 Route::prefix('v1')->group(function(){
     // Authentication routes (no middleware required)
@@ -57,6 +58,14 @@ Route::prefix('v1')->group(function(){
         Route::where(['adeudo' => '[0-9]+'])->group(function(){
             Route::get('adeudos/{adeudo}', [AdeudoController::class, 'show']);
             Route::put('adeudos/{adeudo}', [AdeudoController::class, 'update']);
+        });
+
+        // Pago CRUD routes
+        Route::get('pagos/search/{q?}', [PagoController::class, 'search']);
+        Route::get('pagos', [PagoController::class, 'index']);
+        Route::post('pagos', [PagoController::class, 'store']);
+        Route::where(['pago' => '[0-9]+'])->group(function(){
+            Route::get('pagos/{pago}', [PagoController::class, 'show']);
         });
     });
 });
