@@ -19,10 +19,28 @@ class EstudianteController extends Controller
     {
         try {
             $q = $request->get('q');
+            $modalidad = $request->get('modalidad');
+            $nivel = $request->get('nivel');
+            $grado = $request->get('grado');
 
-            if($q){
-                $query = Estudiante::query()->with('persona');
-                $query->where(function($subQuery) use ($q){
+            $query = Estudiante::query()->with('persona');
+
+            // Apply specific filters if provided
+            if ($modalidad) {
+                $query->where('modalidad', $modalidad);
+            }
+
+            if ($nivel) {
+                $query->where('nivel', $nivel);
+            }
+
+            if ($grado) {
+                $query->where('grado', $grado);
+            }
+
+            // Apply search filter if provided
+            if ($q) {
+                $query->where(function($subQuery) use ($q) {
                     $subQuery->where('nivel', 'LIKE', "%{$q}%")
                          ->orWhere('grado', 'LIKE', "%{$q}%")
                          ->orWhere('modalidad','LIKE',"%{$q}%")
@@ -32,14 +50,10 @@ class EstudianteController extends Controller
                                          ->orWhere('apellido_materno', 'LIKE', "%{$q}%");
                          });
                 });
-
-                $estudiantes = $query->orderByDesc('id')->get();
-            }else {
-              
-                $estudiantes = Estudiante::with('persona')->orderByDesc('id')->get();
             }
+
+            $estudiantes = $query->orderByDesc('id')->get();
            
-            
             return response()->json([
                 'success' => true,
                 'data' => $estudiantes
@@ -83,7 +97,6 @@ class EstudianteController extends Controller
                 'apellido_materno' => $request->apellido_materno,
             ]);
 
-            // Then create the estudiante with persona reference
             $estudiante = Estudiante::create([
                 'persona_id' => $persona->id,
                 'nivel' => $request->nivel,

@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pagos', function (Blueprint $table) {
+        Schema::create('conceptos_periodos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('estudiante_id')->constrained('estudiantes')->restrictOnDelete();
-            $table->string('folio');
-            $table->decimal('monto',10,2);
-            $table->enum('metodo_pago',['efectivo','transferencia']);
             $table->timestamps();
         });
     }
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pagos');
+        Schema::dropIfExists('conceptos_periodos');
     }
 };

@@ -17,11 +17,7 @@ class GenerarAdeudosEstudiantes implements ShouldQueue
     public int $timeout = 300;
     public int $tries = 3;
 
-    public function __construct(
-        public array $rangosFechas,
-        public ?string $nivel = null,
-        public ?string $modalidad = null
-    ) {}
+    public function __construct(public array $rangosFechas) {}
 
     public function handle(): void
     {
@@ -32,10 +28,7 @@ class GenerarAdeudosEstudiantes implements ShouldQueue
             'Material y Mantenimiento'
         ])->get();
         
-        $estudiantes = Estudiante::query()
-            ->when($this->nivel, fn($q) => $q->where('nivel', $this->nivel))
-            ->when($this->modalidad, fn($q) => $q->where('modalidad', $this->modalidad))
-            ->get();
+        $estudiantes = Estudiante::all();
 
         foreach ($estudiantes as $estudiante) {
             foreach ($conceptos as $concepto) {

@@ -16,63 +16,91 @@ class ConceptoSeeder extends Seeder
         $conceptos = [
             [
                 'nombre' => 'Ficha',
-                'costo' => 100.00,
+                'costo' => 250.00,
                 'periodo' => 'pago_unico',
                 'nivel' => 'general',
                 'modalidad' => 'general'
             ],
             [
                 'nombre' => 'Credencial',
-                'costo' => 50.00,
+                'costo' => 70.00,
                 'periodo' => 'pago_unico',
                 'nivel' => 'general',
                 'modalidad' => 'general'
             ],
             [
                 'nombre' => 'Libros',
-                'costo' => 300.00,
+                'costo' => 1400.00,
                 'periodo' => 'pago_unico',
-                'nivel' => 'general',
+                'nivel' => 'preescolar',
                 'modalidad' => 'general'
             ],
             [
-                'nombre' => 'Inscripción',
-                'costo' => 500.00,
+                'nombre' => 'Libros',
+                'costo' => 1600.00,
                 'periodo' => 'pago_unico',
-                'nivel' => 'general',
+                'nivel' => 'primaria',
                 'modalidad' => 'general'
             ],
             [
-                'nombre' => 'Colegiatura',
-                'costo' => 1200.00,
-                'periodo' => 'mensual',
-                'nivel' => 'general',
-                'modalidad' => 'general'
-            ],
-            [
-                'nombre' => 'Pago Puntual',
-                'costo' => 100.00,
-                'periodo' => 'mensual',
-                'nivel' => 'general',
+                'nombre' => 'Libros',
+                'costo' => 1600.00,
+                'periodo' => 'pago_unico',
+                'nivel' => 'secundaria',
                 'modalidad' => 'general'
             ],
             [
                 'nombre' => 'Material y Mantenimiento',
-                'costo' => 200.00,
+                'costo' => 325.00,
                 'periodo' => 'semestral',
-                'nivel' => 'general',
+                'nivel' => 'preescolar',
+                'modalidad' => 'general'
+            ],
+            [
+                'nombre' => 'Material y Mantenimiento',
+                'costo' => 325.00,
+                'periodo' => 'semestral',
+                'nivel' => 'primaria',
+                'modalidad' => 'general'
+            ],
+            [
+                'nombre' => 'Material y Mantenimiento',
+                'costo' => 325.00,
+                'periodo' => 'semestral',
+                'nivel' => 'secundaria',
                 'modalidad' => 'general'
             ],
             [
                 'nombre' => 'Batería De Examenes',
-                'costo' => 150.00,
+                'costo' => 325.00,
                 'periodo' => 'semestral',
-                'nivel' => 'general',
+                'nivel' => 'bachillerato',
+                'modalidad' => 'general'
+            ],
+            [
+                'nombre' => 'Batería De Examenes',
+                'costo' => 325.00,
+                'periodo' => 'semestral',
+                'nivel' => 'primaria',
+                'modalidad' => 'general'
+            ],
+            [
+                'nombre' => 'Batería De Examenes',
+                'costo' => 325.00,
+                'periodo' => 'semestral',
+                'nivel' => 'secundaria',
+                'modalidad' => 'general'
+            ],
+            [
+                'nombre' => 'Batería De Examenes',
+                'costo' => 325.00,
+                'periodo' => 'semestral',
+                'nivel' => 'bachillerato',
                 'modalidad' => 'general'
             ],
             [
                 'nombre' => 'Seguro Escolar',
-                'costo' => 80.00,
+                'costo' => 250.00,
                 'periodo' => 'semestral',
                 'nivel' => 'general',
                 'modalidad' => 'general'

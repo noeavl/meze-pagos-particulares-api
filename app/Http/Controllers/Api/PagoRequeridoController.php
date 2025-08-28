@@ -12,17 +12,21 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class PagoController extends Controller
+class PagoRequeridoController extends Controller
 {
     /**
-     * Display a listing of payments with pagination
+     * Display a listing of required payments with pagination
      */
     public function index(Request $request): JsonResponse
     {
         try {
             $perPage = $request->get('per_page', 15);
             
+            // Filter payments for required debts only
             $pagos = Pago::with(['adeudos.concepto', 'adeudos.estudiante.persona'])
+                ->whereHas('adeudos.concepto', function($query) {
+                    $query->where('requerido', true);
+                })
                 ->orderBy('created_at', 'desc')
                 ->paginate($perPage);
 
@@ -34,14 +38,14 @@ class PagoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener pagos',
+                'message' => 'Error al obtener pagos requeridos',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Store a newly created payment
+     * Store a newly created required payment
      */
     public function store(Request $request): JsonResponse
     {
@@ -64,13 +68,27 @@ class PagoController extends Controller
 
             DB::beginTransaction();
 
-            // Get debts to be paid
-            $adeudos = Adeudo::whereIn('id', $request->adeudos)->get();
+            // Get debts to be paid and verify they are required
+            $adeudos = Adeudo::with('concepto')
+                ->whereIn('id', $request->adeudos)
+                ->get();
             
             if ($adeudos->isEmpty()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No se encontraron adeudos válidos.'
+                ], 400);
+            }
+
+            // Verify all debts are required
+            $nonRequiredDebt = $adeudos->first(function($adeudo) {
+                return !$adeudo->concepto->requerido;
+            });
+
+            if ($nonRequiredDebt) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo se pueden procesar pagos de conceptos requeridos.'
                 ], 400);
             }
 
@@ -91,7 +109,7 @@ class PagoController extends Controller
                 'metodo_pago' => $request->metodo_pago
             ]);
 
-            // Distribute payment across debts
+            // Distribute payment across required debts
             $montoRestante = $request->monto;
             
             foreach ($adeudos as $adeudo) {
@@ -121,7 +139,7 @@ class PagoController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Pago registrado exitosamente',
+                'message' => 'Pago requerido registrado exitosamente',
                 'data' => $pago
             ], 201);
 
@@ -136,19 +154,22 @@ class PagoController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Error al procesar el pago',
+                'message' => 'Error al procesar el pago requerido',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Display the specified payment
+     * Display the specified required payment
      */
     public function show($id): JsonResponse
     {
         try {
             $pago = Pago::with(['adeudos.concepto', 'adeudos.estudiante.persona'])
+                ->whereHas('adeudos.concepto', function($query) {
+                    $query->where('requerido', true);
+                })
                 ->findOrFail($id);
 
             return response()->json([
@@ -159,24 +180,27 @@ class PagoController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Pago no encontrado'
+                'message' => 'Pago requerido no encontrado'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener pago',
+                'message' => 'Error al obtener pago requerido',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Search payments with multiple filters
+     * Search required payments with multiple filters
      */
     public function search(Request $request): JsonResponse
     {
         try {
-            $query = Pago::with(['adeudos.concepto', 'adeudos.estudiante.persona']);
+            $query = Pago::with(['adeudos.concepto', 'adeudos.estudiante.persona'])
+                ->whereHas('adeudos.concepto', function($q) {
+                    $q->where('requerido', true);
+                });
 
             // Search by folio
             if ($request->has('folio') && !empty($request->folio)) {
@@ -211,10 +235,11 @@ class PagoController extends Controller
                 });
             }
 
-            // Search by concept name
+            // Search by required concept name
             if ($request->has('concepto') && !empty($request->concepto)) {
                 $query->whereHas('adeudos.concepto', function($q) use ($request) {
-                    $q->where('nombre', 'like', '%' . $request->concepto . '%');
+                    $q->where('nombre', 'like', '%' . $request->concepto . '%')
+                      ->where('requerido', true);
                 });
             }
 
@@ -238,7 +263,8 @@ class PagoController extends Controller
                                ->orWhere('apellido_materno', 'like', '%' . $searchTerm . '%');
                       })
                       ->orWhereHas('adeudos.concepto', function($subQ) use ($searchTerm) {
-                          $subQ->where('nombre', 'like', '%' . $searchTerm . '%');
+                          $subQ->where('nombre', 'like', '%' . $searchTerm . '%')
+                               ->where('requerido', true);
                       });
                 });
             }
@@ -254,7 +280,7 @@ class PagoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al buscar pagos',
+                'message' => 'Error al buscar pagos requeridos',
                 'error' => $e->getMessage()
             ], 500);
         }
