@@ -26,12 +26,12 @@ Artisan::command('inspire', function () {
 
 Schedule::call(function(){
     $year = date('Y');
-    GenerarAdeudosEstudiantes::dispatch(($year ).'-08-01',($year  ) .'-08-15');
+    GenerarAdeudosEstudiantes::dispatch(($year ).'-08-01',($year  ) .'-08-15',$year);
 })->yearly();
 
 Schedule::call(function(){
     $year = date('Y');
-    GenerarAdeudosEstudiantes::dispatch(($year + 1).'-02-01',($year + 1) .'-02-28');
+    GenerarAdeudosEstudiantes::dispatch(($year + 1).'-02-01',($year + 1) .'-02-28', $year);
 })->yearly();
 
 // Schedule update estados vencidos.

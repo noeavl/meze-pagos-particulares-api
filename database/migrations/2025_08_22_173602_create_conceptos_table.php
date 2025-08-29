@@ -18,7 +18,6 @@ return new class extends Migration
             $table->enum('periodo',['pago_unico','mensual','semestral']);
             $table->enum('nivel',['general','preescolar','primaria','secundaria','bachillerato','bachillerato_sabatino'])->default('general');
             $table->enum('modalidad',['general','presencial','en_linea'])->default('general');
-            //
             $table->timestamps();
         });
     }

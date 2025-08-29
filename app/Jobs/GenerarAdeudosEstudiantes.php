@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Carbon\Carbon;
 
 class GenerarAdeudosEstudiantes implements ShouldQueue
 {
@@ -19,7 +20,7 @@ class GenerarAdeudosEstudiantes implements ShouldQueue
     public int $timeout = 300;
     public int $tries = 3;
 
-    public function __construct(public $fechaInicio,public $fechaFin) {}
+    public function __construct(public $fechaInicio,public $fechaFin, public $year) {}
 
     public function handle(): void
     {
@@ -44,6 +45,14 @@ class GenerarAdeudosEstudiantes implements ShouldQueue
                                     'total'=> $c->costo,
                                     'fecha_inicio' => $this->fechaInicio,
                                     'fecha_vencimiento' => $this->fechaFin,
+                                ]);
+                            }else if($c->periodo == 'pago_unico'){
+                                Adeudo::create([
+                                    'estudiante_id'=> $e->id,
+                                    'concepto_id' => $c->id,
+                                    'total' => $c->costo,
+                                    'fecha_inicio' => $this->year . Carbon::now()->toDateString(),
+                                    'fecha_vencimiento' => ($this->year + 1) . Carbon::now()->toDateString(),
                                 ]);
                             }
                         }
