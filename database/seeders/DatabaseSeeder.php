@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
             ConceptoSeeder::class,
             UserSeeder::class,
             EstudianteSeeder::class,
-            AdeudoSeeder::class,
         ]);
     }
 }

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('concepto_id')->constrained('conceptos')->restrictOnDelete();
             $table->foreignId('estudiante_id')->constrained('estudiantes')->restrictOnDelete();
             $table->enum('estado',['pendiente','pagado','vencido']);
-            $table->decimal('pendiente',10,2);
-            $table->decimal('pagado',10,2);
+            $table->decimal('pendiente',10,2)->default(0);
+            $table->decimal('pagado',10,2)->default(0);
             $table->decimal('total',10,2);
             $table->date('fecha_inicio');
             $table->date('fecha_vencimiento');

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('nivel',['preescolar','primaria','secundaria','bachillerato','bachillerato_sabatino']);
             $table->enum('grado',['1','2','3','4','5','6']);
             $table->enum('modalidad',['presencial','en_linea']);
+            $table->boolean('estado')->default(true);
             $table->timestamps();
         });
     }

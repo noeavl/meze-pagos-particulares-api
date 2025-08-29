@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Concepto;
+use App\Models\Estudiante;
 
 class AdeudoController extends Controller
 {
@@ -41,7 +43,7 @@ class AdeudoController extends Controller
                 $query->where('estudiante_id', $estudiante_id);
             }
 
-            $adeudos = $query->orderByDesc('id')->get();
+            $adeudos = $query->orderBy('fecha_vencimiento','desc')->orderByDesc('id')->get();
            
             return response()->json([
                 'success' => true,
@@ -113,6 +115,50 @@ class AdeudoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function storeMassiveDebts(Request $request){
+        $validator = Validator::make($request->all(),[
+            'fecha_inicio' => 'required|date',
+            'fecha_vencimiento'=>'required|date'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success'=>false,
+                'message'=>'Errores de validación',
+                'errors'=>$validator->errors()
+            ],422);
+        }
+
+        $estudiantes = Estudiante::where('estado',true)->get();
+        $conceptos = Concepto::all();
+
+            foreach($estudiantes as $e){
+                foreach($conceptos as $c){
+                    if( ($c->nivel == 'general' || $c->nivel == $e->nivel) && ($c->modalidad == $e->modalidad || $c->modalidad == 'general')){
+                        if($c->periodo == 'semestral'){
+                            $adeudoExistente = Adeudo::where([
+                                'estudiante_id' => $e->id,
+                                'concepto_id' => $c->id,
+                                'fecha_inicio' => $request->fecha_inicio,
+                                'fecha_vencimiento' => $request->fecha_vencimiento,
+                            ])->exists();
+                            if(!$adeudoExistente){
+                                Adeudo::create([
+                                    'estudiante_id' => $e->id,
+                                    'concepto_id' => $c->id,
+                                    'total'=> $c->costo,
+                                    'fecha_inicio' => $request->fechaInicio,
+                                    'fecha_vencimiento' => $request->fecha_vencimiento,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+
+
     }
 
     /**

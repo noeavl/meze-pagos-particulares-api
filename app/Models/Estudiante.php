@@ -15,7 +15,8 @@ class Estudiante extends Model
         'persona_id',
         'nivel',
         'grado',
-        'modalidad'
+        'modalidad',
+        'estado'
     ];
 
     public function persona(): BelongsTo
